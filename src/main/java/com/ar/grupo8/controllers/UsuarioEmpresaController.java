@@ -1,8 +1,11 @@
 package com.ar.grupo8.controllers;
 
+import com.ar.grupo8.dto.UsuarioEmpresaDto;
 import com.ar.grupo8.models.UsuarioEmpresa;
 import com.ar.grupo8.service.UsuarioEmpresaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,7 @@ public class UsuarioEmpresaController {
 
     @Autowired
     private UsuarioEmpresaService usuarioEmpresaService;
+    private UsuarioEmpresaDto usuarioEmpresaDto;
 
     @GetMapping
     public List<UsuarioEmpresa> getAll() {
@@ -26,11 +30,19 @@ public class UsuarioEmpresaController {
     }
 
     @PostMapping("/create")
-    public void create(@RequestBody UsuarioEmpresa usuarioEmpresa) {
-        usuarioEmpresaService.createUsuarioEmpresa(usuarioEmpresa);
+    public ResponseEntity<String> create(@Valid @RequestBody UsuarioEmpresaDto usuarioEmpresaDto) {
+        usuarioEmpresaService.createUsuarioEmpresa(usuarioEmpresaDto);
+        return ResponseEntity.ok("Usuario creado con éxito");
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> update(@PathVariable("id") Long id, @Valid @RequestBody UsuarioEmpresaDto usuarioEmpresaDto) {
+            usuarioEmpresaService.updateUsuarioEmpresa(id, usuarioEmpresaDto);
+            return ResponseEntity.ok("Usuario actualizado con éxito");
+    }
+
+
+    @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable("id") Long id) {
         usuarioEmpresaService.deleteUsuarioEmpresa(id);
     }
