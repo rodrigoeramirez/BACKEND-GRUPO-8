@@ -29,6 +29,9 @@ public class UsuarioEmpresa {
     @Column(name = "legajo", nullable = false)
     private String legajo;
 
+    @Column(name = "activo", nullable = false)
+    private Boolean activo=true; // Por defecto el usuario va a estar activo.
+
     // Relación con Departamento
     @ManyToOne // Muchos usuarios pueden pertenecer a un departamento.
     @JoinColumn(name = "departamento_id", nullable = false) // Define el nombre de la columna en la base de datos que actuará como clave foránea para esta relación.

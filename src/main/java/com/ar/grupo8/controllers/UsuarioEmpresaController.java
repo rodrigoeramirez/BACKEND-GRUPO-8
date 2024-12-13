@@ -1,5 +1,6 @@
 package com.ar.grupo8.controllers;
 
+import com.ar.grupo8.dto.UpdateUsuarioEmpresaDto;
 import com.ar.grupo8.dto.UsuarioEmpresaDto;
 import com.ar.grupo8.models.UsuarioEmpresa;
 import com.ar.grupo8.service.UsuarioEmpresaService;
@@ -19,13 +20,14 @@ public class UsuarioEmpresaController {
     private UsuarioEmpresaService usuarioEmpresaService;
     private UsuarioEmpresaDto usuarioEmpresaDto;
 
+    @CrossOrigin(origins = "http://localhost:5173/") // Permite solicitudes desde React
     @GetMapping
-    public List<UsuarioEmpresa> getAll() {
+    public List<UsuarioEmpresaDto> getAll() {
         return usuarioEmpresaService.getUsuariosEmpresa();
     }
 
     @GetMapping("/{id}")
-    public Optional<UsuarioEmpresa> getById(@PathVariable("id") Long id) {
+    public Optional<UsuarioEmpresaDto> getById(@PathVariable("id") Long id) {
         return usuarioEmpresaService.getUsuarioEmpresaById(id);
     }
 
@@ -35,9 +37,9 @@ public class UsuarioEmpresaController {
         return ResponseEntity.ok("Usuario creado con éxito");
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> update(@PathVariable("id") Long id, @Valid @RequestBody UsuarioEmpresaDto usuarioEmpresaDto) {
-            usuarioEmpresaService.updateUsuarioEmpresa(id, usuarioEmpresaDto);
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<String> update(@PathVariable("id") Long id, @Valid @RequestBody UpdateUsuarioEmpresaDto updateUsuarioEmpresaDto) {
+            usuarioEmpresaService.updateUsuarioEmpresa(id, updateUsuarioEmpresaDto);
             return ResponseEntity.ok("Usuario actualizado con éxito");
     }
 
