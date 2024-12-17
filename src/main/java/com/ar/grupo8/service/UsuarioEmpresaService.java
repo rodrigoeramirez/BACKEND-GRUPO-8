@@ -1,23 +1,32 @@
 package com.ar.grupo8.service;
+import com.ar.grupo8.auth.AuthResponse;
 import com.ar.grupo8.dto.UpdateUsuarioEmpresaDto;
 import com.ar.grupo8.dto.UsuarioEmpresaDto;
+import com.ar.grupo8.jwt.JwtService;
 import com.ar.grupo8.models.Cargo;
 import com.ar.grupo8.models.Departamento;
 import com.ar.grupo8.models.UsuarioEmpresa;
 import com.ar.grupo8.repository.UsuarioEmpresaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UsuarioEmpresaService {
     // Autowired le dice a Spring que debe inyectar automáticamente una dependencia (en este caso, UsuarioEmpresaRepository)
     // En lugar de crear manualmente una instancia del repositorio (por ejemplo, new UsuarioEmpresaRepository()), Spring se encarga de gestionarlo.
     @Autowired
     UsuarioEmpresaRepository usuarioEmpresaRepository; // Defino el repositorio.
+
+    @Autowired
+    JwtService jwtService; // Se encarga de crear el token cuando el usuario se crea con exito.
+
+    private final PasswordEncoder passwordEncoder;
 
     public boolean isEmailAvailable(String email) {
         return usuarioEmpresaRepository.findByEmail(email).isEmpty();
@@ -68,12 +77,14 @@ public class UsuarioEmpresaService {
                 ));
     }
 
-    public void createUsuarioEmpresa (UsuarioEmpresaDto usuarioEmpresaDTO) {
+    public AuthResponse createUsuarioEmpresa (UsuarioEmpresaDto usuarioEmpresaDTO) {
         UsuarioEmpresa usuarioEmpresa = new UsuarioEmpresa();
 
         usuarioEmpresa.setNombre(usuarioEmpresaDTO.getNombre());
         usuarioEmpresa.setApellido(usuarioEmpresaDTO.getApellido());
-        usuarioEmpresa.setClave(usuarioEmpresaDTO.getClave());
+        // Encriptar la clave antes de guardarla
+        String encryptedPassword = passwordEncoder.encode(usuarioEmpresaDTO.getClave());
+        usuarioEmpresa.setClave(encryptedPassword); // Usamos la clave encriptada
 
         if (isUserNameAvailable(usuarioEmpresaDTO.getUsername())) {
             usuarioEmpresa.setUsername(usuarioEmpresaDTO.getUsername());
@@ -105,6 +116,10 @@ public class UsuarioEmpresaService {
 
         // Guardar el objeto UsuarioEmpresa en la base de datos
         usuarioEmpresaRepository.save(usuarioEmpresa);
+
+        return  AuthResponse.builder()
+                .token(jwtService.getToken(usuarioEmpresa))
+                .build();
     }
 
     public void updateUsuarioEmpresa(Long id, UpdateUsuarioEmpresaDto usuarioEmpresaDto) {
@@ -127,7 +142,9 @@ public class UsuarioEmpresaService {
             }
         }
         if (usuarioEmpresaDto.getClave() != null){
-            usuario.setClave(usuarioEmpresaDto.getClave());
+            // Encriptar la clave antes de guardarla
+            String encryptedPassword = passwordEncoder.encode(usuarioEmpresaDto.getClave());
+            usuario.setClave(encryptedPassword); // Usamos la clave encriptada
         }
         if (usuarioEmpresaDto.getEmail() != null){
             if (isEmailAvailable(usuarioEmpresaDto.getEmail())) {

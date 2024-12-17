@@ -33,6 +33,10 @@ public class UsuarioEmpresaController {
 
     @PostMapping("/create")
     public ResponseEntity<String> create(@Valid @RequestBody UsuarioEmpresaDto usuarioEmpresaDto) {
+        // ResponseEntity: Es una clase de Spring que representa la respuesta completa de HTTP, que incluye el código de estado, encabezados y cuerpo de la respuesta.
+        // @Valid: Indica que el objeto que se recibe como argumento (usuarioEmpresaDto) debe ser validado automáticamente antes de que el metodo continúe.
+        // @RequestBody:  indica que el parámetro del metodo (usuarioEmpresaDto) debe ser tomado del cuerpo de la solicitud HTTP (la parte "body" de la solicitud).
+        // Spring convertirá automáticamente el cuerpo de la solicitud en un objeto de esta clase gracias a la anotación @RequestBody.
         usuarioEmpresaService.createUsuarioEmpresa(usuarioEmpresaDto);
         return ResponseEntity.ok("Usuario creado con éxito");
     }

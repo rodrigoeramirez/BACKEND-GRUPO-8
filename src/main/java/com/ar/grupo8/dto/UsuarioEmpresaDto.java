@@ -5,12 +5,18 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 // JsonInclude es una anotación de la biblioteca Jackson, que se utiliza en Java para personalizar cómo los objetos se convierten a formato JSON (serialización) y cómo los datos JSON se convierten a objetos Java (deserialización).
 @JsonInclude(JsonInclude.Include.NON_NULL) // Esto hace que los atributos con valores null no sean incluidos en la salida JSON. Por ejemplo: cuando retornaba los usuariosEmpresa me mostraba "clave=null" porque desde el metodo (en el servicio) no lo enviaba, pero si se encuentra como atributo en el DTO.
-@Data // Crea los getters y setters automaticamente.
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor// Crea los getters y setters automaticamente.
 public class UsuarioEmpresaDto {
 
     @NotNull(message = "El nombre no puede ser nulo")

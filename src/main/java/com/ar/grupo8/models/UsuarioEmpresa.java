@@ -1,14 +1,21 @@
 package com.ar.grupo8.models;
+
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Data // Genera automaticamente los Getters y Setters sin que tengas que escribirlo manualmente.
-@Entity // Marca una clase como una entidad de JPA, lo que significa que esta clase se va a mapear a una tabla en la base de datos.
-@Table(name="usuario_empresa") // Especifica el nombre de la tabla en la base de datos a la que se va a mapear la entidad.
-public class UsuarioEmpresa {
+import java.util.Collection;
+import java.util.Collections;
 
-    @Id // Esto refeleja que va a ser un Id.
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Se va a generar de forma automatica.
+@Data
+@Entity
+@Table(name="usuario_empresa")
+public class UsuarioEmpresa implements UserDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "nombre", nullable = false)
@@ -30,17 +37,51 @@ public class UsuarioEmpresa {
     private String legajo;
 
     @Column(name = "activo", nullable = false)
-    private Boolean activo=true; // Por defecto el usuario va a estar activo.
+    private Boolean activo = true;
 
-    // Relación con Departamento
-    @ManyToOne // Muchos usuarios pueden pertenecer a un departamento.
-    @JoinColumn(name = "departamento_id", nullable = false) // Define el nombre de la columna en la base de datos que actuará como clave foránea para esta relación.
+    @ManyToOne
+    @JoinColumn(name = "departamento_id", nullable = false)
     private Departamento departamento;
 
-    // Relación con Cargo
-    @ManyToOne // Muchos usuarios pueden tener un cargo.
-    @JoinColumn(name = "cargo_id", nullable = false) // Nombre de la columna en la tabla.
-    private Cargo cargo; // Es un atributo de la clase UsuarioEmpresa que representa el objeto Departamento al que está asociado el usuario.
-    // Este campo no guarda directamente el ID del departamento (eso lo hace la base de datos).
-    // En su lugar, JPA maneja automáticamente las relaciones y te permite accede al objeto completo.
+    @ManyToOne
+    @JoinColumn(name = "cargo_id", nullable = false)
+    private Cargo cargo;
+
+    // Métodos requeridos por UserDetails
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Si deseas manejar roles, puedes retornar una lista de roles desde aquí.
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return clave; // Retorna la clave del usuario
+    }
+
+    @Override
+    public String getUsername() {
+        return username; // Retorna el nombre de usuario
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Define si la cuenta está expirada
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // Define si la cuenta está bloqueada
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Define si las credenciales están expiradas
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return activo; // Define si el usuario está activo
+    }
 }
+
