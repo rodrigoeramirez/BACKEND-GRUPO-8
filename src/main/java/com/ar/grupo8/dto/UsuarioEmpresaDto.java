@@ -1,10 +1,7 @@
 package com.ar.grupo8.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor// Crea los getters y setters automaticamente.
 public class UsuarioEmpresaDto {
+
+    // El legajo es autoincremental, es la clave principal del usuario empresa
+    @Min(1) // Mínimo valor permitido
+    private Integer legajo;
 
     @NotNull(message = "El nombre no puede ser nulo")
     @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
@@ -39,11 +40,6 @@ public class UsuarioEmpresaDto {
     @Email(message = "Debe proporcionar un email válido")
     private String email;
 
-    @NotNull(message = "El legajo no puede ser nulo")
-    @Size(min = 5, max = 15, message = "El legajo debe tener entre 5 y 15 caracteres")
-    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "El legajo solo puede contener letras y números")
-    private String legajo;
-
     @NotNull(message = "El ID del departamento no puede ser nulo")
     private Long departamento_id;
 
@@ -54,7 +50,7 @@ public class UsuarioEmpresaDto {
 
     private String cargo;
 
-    public UsuarioEmpresaDto(String nombre, String apellido, String username, String email, String legajo, String cargoNombre, String departamentoNombre) {
+    public UsuarioEmpresaDto(String nombre, String apellido, String username, String email, Integer legajo, String cargoNombre, String departamentoNombre) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.username = username;

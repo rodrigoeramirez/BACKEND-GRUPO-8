@@ -36,7 +36,7 @@ public class UsuarioEmpresaService {
         return usuarioEmpresaRepository.findByUsername(username).isEmpty();
     }
 
-    public boolean isLegajoAvailable(String legajo) {
+    public boolean isLegajoAvailable(Integer legajo) {
         return usuarioEmpresaRepository.findByLegajo(legajo).isEmpty();
     }
 
@@ -61,10 +61,10 @@ public class UsuarioEmpresaService {
         //Tipo de dato final: List<UsuarioEmpresaDTO>.
     }
 
-    public Optional<UsuarioEmpresaDto> getUsuarioEmpresaById (Long id) {
-        // Busca al usuario por su ID en la base de datos.
+    public Optional<UsuarioEmpresaDto> getUsuarioEmpresaById (Integer legajo) {
+        // Busca al usuario por su Legajo en la base de datos.
         // Devuelve un Optional<UsuarioEmpresa>.
-        return usuarioEmpresaRepository.findById(id)
+        return usuarioEmpresaRepository.findByLegajo(legajo)
                 // Si el Optional no está vacío, transforma el UsuarioEmpresa en un UsuarioEmpresaDto.
                 .map(usuario -> new UsuarioEmpresaDto(
                         usuario.getNombre(),                   // Obtiene el nombre.
@@ -98,12 +98,6 @@ public class UsuarioEmpresaService {
             throw new RuntimeException("El email ya está registrado");
         }
 
-        if (isLegajoAvailable(usuarioEmpresaDTO.getLegajo())) {
-            usuarioEmpresa.setLegajo(usuarioEmpresaDTO.getLegajo());
-        } else {
-            throw new RuntimeException("El legajo ya está registrado");
-        }
-
         // En usuarioEmpresaDTO me llegan los id para la foranea, sin embargo, en el servicio (UsuarioEmpresaService), necesito mapear estos IDs a los objetos Departamento y Cargo correspondientes.
         // Lo que realmente está haciendo este fragmento de código es configurar una relación sin persistir un nuevo objeto Departamento en la base de datos.
         Departamento departamento = new Departamento(); // Se está creando un objeto en memoria para asociarlo al UsuarioEmpresa (NO SERÁ PERSISTIDO).
@@ -122,9 +116,9 @@ public class UsuarioEmpresaService {
                 .build();
     }
 
-    public void updateUsuarioEmpresa(Long id, UpdateUsuarioEmpresaDto usuarioEmpresaDto) {
-        // Buscar el usuario por id
-        UsuarioEmpresa usuario = usuarioEmpresaRepository.findById(id)
+    public void updateUsuarioEmpresa(Integer legajo, UpdateUsuarioEmpresaDto usuarioEmpresaDto) {
+        // Buscar el usuario por legajo
+        UsuarioEmpresa usuario = usuarioEmpresaRepository.findByLegajo(legajo)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // Actualizar los campos del usuario
@@ -153,13 +147,6 @@ public class UsuarioEmpresaService {
                 throw new RuntimeException("El email ya está registrado");
             }
         }
-        if (usuarioEmpresaDto.getLegajo() != null){
-            if (isLegajoAvailable(usuarioEmpresaDto.getLegajo())) {
-                usuario.setLegajo(usuarioEmpresaDto.getLegajo());
-            } else {
-                throw new RuntimeException("El legajo ya está registrado");
-            }
-        }
 
         // Asignar el id del departamento y cargo directamente
         if (usuarioEmpresaDto.getDepartamentoId() != null){
@@ -176,9 +163,9 @@ public class UsuarioEmpresaService {
         usuarioEmpresaRepository.save(usuario);
     }
 
-    public void deleteUsuarioEmpresa (Long id) {
+    public void deleteUsuarioEmpresa (Integer legajo) {
         // Busca el usuario por su ID, lanza una excepción si no existe
-        UsuarioEmpresa usuario = usuarioEmpresaRepository.findById(id)
+        UsuarioEmpresa usuario = usuarioEmpresaRepository.findByLegajo(legajo)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // Cambia el estado a inactivo

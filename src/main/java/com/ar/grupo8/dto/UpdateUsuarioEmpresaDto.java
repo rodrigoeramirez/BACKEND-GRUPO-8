@@ -25,10 +25,6 @@ public class UpdateUsuarioEmpresaDto {
     @Email(message = "Debe proporcionar un email válido")
     private String email;
 
-    @Size(min = 5, max = 15, message = "El legajo debe tener entre 5 y 15 caracteres")
-    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "El legajo solo puede contener letras y números")
-    private String legajo;
-
     private Long departamentoId;
 
     private Long cargoId;

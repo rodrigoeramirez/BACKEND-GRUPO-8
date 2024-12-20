@@ -20,15 +20,14 @@ public class UsuarioEmpresaController {
     private UsuarioEmpresaService usuarioEmpresaService;
     private UsuarioEmpresaDto usuarioEmpresaDto;
 
-    @CrossOrigin(origins = "http://localhost:5173/") // Permite solicitudes desde React
     @GetMapping
     public List<UsuarioEmpresaDto> getAll() {
         return usuarioEmpresaService.getUsuariosEmpresa();
     }
 
-    @GetMapping("/{id}")
-    public Optional<UsuarioEmpresaDto> getById(@PathVariable("id") Long id) {
-        return usuarioEmpresaService.getUsuarioEmpresaById(id);
+    @GetMapping("/{legajo}")
+    public Optional<UsuarioEmpresaDto> getById(@PathVariable("legajo") Integer legajo) {
+        return usuarioEmpresaService.getUsuarioEmpresaById(legajo);
     }
 
     @PostMapping("/create")
@@ -41,16 +40,16 @@ public class UsuarioEmpresaController {
         return ResponseEntity.ok("Usuario creado con éxito");
     }
 
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<String> update(@PathVariable("id") Long id, @Valid @RequestBody UpdateUsuarioEmpresaDto updateUsuarioEmpresaDto) {
-            usuarioEmpresaService.updateUsuarioEmpresa(id, updateUsuarioEmpresaDto);
+    @PatchMapping("/update/{legajo}")
+    public ResponseEntity<String> update(@PathVariable("legajo") Integer legajo, @Valid @RequestBody UpdateUsuarioEmpresaDto updateUsuarioEmpresaDto) {
+            usuarioEmpresaService.updateUsuarioEmpresa(legajo, updateUsuarioEmpresaDto);
             return ResponseEntity.ok("Usuario actualizado con éxito");
     }
 
 
-    @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable("id") Long id) {
-        usuarioEmpresaService.deleteUsuarioEmpresa(id);
+    @DeleteMapping("/delete/{legajo}")
+    public void delete(@PathVariable("legajo") Integer legajo) {
+        usuarioEmpresaService.deleteUsuarioEmpresa(legajo);
     }
 
 }

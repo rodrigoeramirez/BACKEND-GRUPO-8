@@ -16,7 +16,8 @@ public class UsuarioEmpresa implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "legajo", unique = true, nullable = false)
+    private Integer legajo;  // 'legajo' es ahora la clave primaria autoincremental
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -32,9 +33,6 @@ public class UsuarioEmpresa implements UserDetails {
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-
-    @Column(name = "legajo", nullable = false)
-    private String legajo;
 
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;

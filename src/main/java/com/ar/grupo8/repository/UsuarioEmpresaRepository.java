@@ -13,5 +13,5 @@ public interface UsuarioEmpresaRepository extends JpaRepository<UsuarioEmpresa,L
     List<UsuarioEmpresa> findAllByActivoTrue(); // Implementación automatica: Busca (findAll) todas las entidades donde el campo activo sea true.
     Optional<UsuarioEmpresa> findByEmail(String email); // Creo el metodo de consulta personalizado simplemente siguiendo una nomenclatura específica en tu interfaz de repositorio.
     Optional<UsuarioEmpresa> findByUsername(String username);
-    Optional<UsuarioEmpresa> findByLegajo(String legajo);
+    Optional<UsuarioEmpresa> findByLegajo(Integer legajo);
 }
