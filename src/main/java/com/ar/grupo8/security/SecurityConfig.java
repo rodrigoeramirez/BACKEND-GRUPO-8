@@ -25,7 +25,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         return http
                 .csrf(config -> config.disable()) // Desactiva CSRF
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/auth/**", "/departamentos", "/cargos").permitAll(); // Rutas sin autenticación
+                    auth.requestMatchers("/auth/**", "/departamentos", "/cargos", "/usuarios/validate-username/**", "/usuarios/validate-email/**").permitAll(); // Rutas sin autenticación
                     auth.anyRequest().authenticated(); // El resto requiere autenticación
                 })
                 .sessionManagement(session -> {

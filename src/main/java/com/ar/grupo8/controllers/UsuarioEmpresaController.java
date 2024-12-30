@@ -52,4 +52,14 @@ public class UsuarioEmpresaController {
         usuarioEmpresaService.deleteUsuarioEmpresa(legajo);
     }
 
+    @GetMapping("validate-username/{username}")
+    public boolean vaildateUsername (@PathVariable("username") String username) {
+        return usuarioEmpresaService.isUserNameAvailable(username);
+    }
+
+    @GetMapping("validate-email/{email}")
+    public boolean validateMail(@PathVariable("email") String email){
+        return usuarioEmpresaService.isEmailAvailable(email);
+    }
+
 }
