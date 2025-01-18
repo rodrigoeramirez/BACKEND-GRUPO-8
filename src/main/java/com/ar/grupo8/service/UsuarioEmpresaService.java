@@ -54,8 +54,8 @@ public class UsuarioEmpresaService {
                         usuario.getUsername(),
                         usuario.getEmail(),
                         usuario.getLegajo(),
-                        usuario.getCargo().getNombre(),
-                        usuario.getDepartamento().getNombre()
+                        usuario.getCargo(),
+                        usuario.getDepartamento()
                 ))
                 .toList(); //Después de transformar los elementos con map, el stream resultante es convertido nuevamente a una lista con el metodo toList().
         //Tipo de dato final: List<UsuarioEmpresaDTO>.
@@ -72,8 +72,8 @@ public class UsuarioEmpresaService {
                         usuario.getUsername(),                 // Obtiene el username.
                         usuario.getEmail(),                    // Obtiene el email.
                         usuario.getLegajo(),                   // Obtiene el legajo.
-                        usuario.getCargo().getNombre(),            // Obtiene el nombre del cargo.
-                        usuario.getDepartamento().getNombre()      // Obtiene el nombre del departamento.
+                        usuario.getCargo(),   // Obtiene el nombre del cargo.
+                        usuario.getDepartamento()   // Obtiene el nombre del departamento.
                 ));
     }
 
@@ -120,45 +120,57 @@ public class UsuarioEmpresaService {
         // Buscar el usuario por legajo
         UsuarioEmpresa usuario = usuarioEmpresaRepository.findByLegajo(legajo)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
+        System.out.println("DTO recibido: " + usuarioEmpresaDto);
         // Actualizar los campos del usuario
-        if (usuarioEmpresaDto.getNombre() != null){
+        if (usuarioEmpresaDto.getNombre() != null) {
             usuario.setNombre(usuarioEmpresaDto.getNombre());
         }
-        if (usuarioEmpresaDto.getApellido() != null){
+        if (usuarioEmpresaDto.getApellido() != null) {
             usuario.setApellido(usuarioEmpresaDto.getApellido());
         }
+
+        // Validar y actualizar el username
         if (usuarioEmpresaDto.getUsername() != null) {
-            if (isUserNameAvailable(usuarioEmpresaDto.getUsername())) {
-                usuario.setUsername(usuarioEmpresaDto.getUsername());
-            } else {
-                throw new RuntimeException("El username ya está registrado");
+            // Verificar si el username no cambia o es diferente al actual
+            if (!usuario.getUsername().equals(usuarioEmpresaDto.getUsername())) {
+                if (isUserNameAvailable(usuarioEmpresaDto.getUsername())) {
+                    usuario.setUsername(usuarioEmpresaDto.getUsername());
+                } else {
+                    throw new RuntimeException("El username ya está registrado");
+                }
             }
         }
-        if (usuarioEmpresaDto.getClave() != null){
-            // Encriptar la clave antes de guardarla
+
+        // Encriptar y actualizar la clave si es proporcionada
+        if (usuarioEmpresaDto.getClave() != null) {
             String encryptedPassword = passwordEncoder.encode(usuarioEmpresaDto.getClave());
             usuario.setClave(encryptedPassword); // Usamos la clave encriptada
         }
-        if (usuarioEmpresaDto.getEmail() != null){
-            if (isEmailAvailable(usuarioEmpresaDto.getEmail())) {
-                usuario.setEmail(usuarioEmpresaDto.getEmail());
-            } else {
-                throw new RuntimeException("El email ya está registrado");
+
+        // Validar y actualizar el email
+        if (usuarioEmpresaDto.getEmail() != null) {
+            // Verificar si el email no cambia o es diferente al actual
+            if (!usuario.getEmail().equals(usuarioEmpresaDto.getEmail())) {
+                if (isEmailAvailable(usuarioEmpresaDto.getEmail())) {
+                    usuario.setEmail(usuarioEmpresaDto.getEmail());
+                } else {
+                    throw new RuntimeException("El email ya está registrado");
+                }
             }
         }
 
-        // Asignar el id del departamento y cargo directamente
-        if (usuarioEmpresaDto.getDepartamentoId() != null){
+        // Asignar el id del departamento y cargo si se proporcionan
+        if (usuarioEmpresaDto.getDepartamento_id() != null) {
             Departamento departamento = new Departamento();
-            departamento.setId(usuarioEmpresaDto.getDepartamentoId()); // Asignar el id al departamento
-            usuario.setDepartamento(departamento); // Establecer la relacion
+            departamento.setId(usuarioEmpresaDto.getDepartamento_id());
+            usuario.setDepartamento(departamento);
         }
-        if (usuarioEmpresaDto.getCargoId() != null){
+        if (usuarioEmpresaDto.getCargo_id() != null) {
             Cargo cargo = new Cargo();
-            cargo.setId(usuarioEmpresaDto.getCargoId()); // Asignar el id al cargo
-            usuario.setCargo(cargo); // Establecer la relacion
+            cargo.setId(usuarioEmpresaDto.getCargo_id());
+            usuario.setCargo(cargo);
         }
+
         // Guardar el usuario actualizado
         usuarioEmpresaRepository.save(usuario);
     }

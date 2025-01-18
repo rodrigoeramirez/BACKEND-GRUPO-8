@@ -1,5 +1,7 @@
 package com.ar.grupo8.dto;
 
+import com.ar.grupo8.models.Cargo;
+import com.ar.grupo8.models.Departamento;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -50,13 +52,15 @@ public class UsuarioEmpresaDto {
 
     private String cargo;
 
-    public UsuarioEmpresaDto(String nombre, String apellido, String username, String email, Integer legajo, String cargoNombre, String departamentoNombre) {
+    public UsuarioEmpresaDto(String nombre, String apellido, String username, String email, Integer legajo, Cargo cargo, Departamento departamento) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.username = username;
         this.email = email;
         this.legajo = legajo;
-        this.departamento = departamentoNombre;
-        this.cargo = cargoNombre;
+        this.cargo = cargo != null ? cargo.getNombre() : null;  // O la propiedad que necesites
+        this.departamento = departamento != null ? departamento.getNombre() : null;  // O la propiedad que necesites
+        this.cargo_id = cargo != null ? cargo.getId() : null;  // Asegúrate de inicializar el id
+        this.departamento_id = departamento != null ? departamento.getId() : null;  // Asegúrate de inicializar el id
     }
 }

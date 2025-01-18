@@ -29,11 +29,28 @@ public class JwtService {
         return Keys.hmacShaKeyFor(key.getBytes());
     }
 
+    public String getEmailFromToken(String token) {
+        return getClaim(token, claims -> claims.get("email", String.class));
+    }
+
+    public String getNombreFromToken(String token) {
+        return getClaim(token, claims -> claims.get("nombre", String.class));
+    }
+
+    public String getApellidoFromToken(String token) {
+        return getClaim(token, claims -> claims.get("apellido", String.class));
+    }
+
     public String getToken(UsuarioEmpresa usuarioEmpresa) {
         return getToken(new HashMap<>(), usuarioEmpresa);
     }
 
     private String getToken(Map<String, Object> extraClaims, UsuarioEmpresa usuarioEmpresa) {
+        extraClaims.put("email", usuarioEmpresa.getEmail());
+        extraClaims.put("nombre", usuarioEmpresa.getNombre());
+        extraClaims.put("apellido", usuarioEmpresa.getApellido());
+        extraClaims.put("iniciales", usuarioEmpresa.getIniciales()); // Agrega las iniciales
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -42,6 +59,9 @@ public class JwtService {
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+
+
 
     public String getUsernameFromToken(String token) {
         return getClaim(token, Claims::getSubject);

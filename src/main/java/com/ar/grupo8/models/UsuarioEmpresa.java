@@ -81,5 +81,12 @@ public class UsuarioEmpresa implements UserDetails {
     public boolean isEnabled() {
         return activo; // Define si el usuario está activo
     }
+
+    // Getter para iniciales
+    public String getIniciales() {
+        String inicialNombre = nombre != null && !nombre.isEmpty() ? nombre.substring(0, 1).toUpperCase() : "";
+        String inicialApellido = apellido != null && !apellido.isEmpty() ? apellido.substring(0, 1).toUpperCase() : "";
+        return inicialNombre + inicialApellido;
+    }
 }
 

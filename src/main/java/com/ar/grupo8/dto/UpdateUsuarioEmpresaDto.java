@@ -25,9 +25,9 @@ public class UpdateUsuarioEmpresaDto {
     @Email(message = "Debe proporcionar un email válido")
     private String email;
 
-    private Long departamentoId;
+    private Long departamento_id;
 
-    private Long cargoId;
+    private Long cargo_id;
 
     // Getters y Setters
 }
