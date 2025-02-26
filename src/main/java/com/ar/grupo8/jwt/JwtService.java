@@ -37,6 +37,10 @@ public class JwtService {
         return getClaim(token, claims -> claims.get("nombre", String.class));
     }
 
+    public String getLegajoFromToken(String token) {
+        return getClaim(token, claims -> claims.get("legajo", String.class));
+    }
+
     public String getApellidoFromToken(String token) {
         return getClaim(token, claims -> claims.get("apellido", String.class));
     }
@@ -49,6 +53,7 @@ public class JwtService {
         extraClaims.put("email", usuarioEmpresa.getEmail());
         extraClaims.put("nombre", usuarioEmpresa.getNombre());
         extraClaims.put("apellido", usuarioEmpresa.getApellido());
+        extraClaims.put("legajo", usuarioEmpresa.getLegajo());
         extraClaims.put("iniciales", usuarioEmpresa.getIniciales()); // Agrega las iniciales
 
         return Jwts

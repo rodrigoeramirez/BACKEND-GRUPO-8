@@ -1,0 +1,15 @@
+1- En el back crear el .env en la raíz del proyecto:
+DB_NAME=gestionespaciosdb
+DB_USER=root
+DB_PASSWORD=Titansport73.
+
+2- Tuve unos problemas con las claves foráneas en Usuario (id_rol) y Actividad (id_ministerio), estaban seteados como not null en mi base de datos, pero los chicos habían puesto eliminación en cascada. Lo solucione modificando manualmente estos atributos en la BD con NULL.
+
+3- En el back en espacio se usa estadoID y no id_estado.
+4- Por las dudas si hacen un pull y tienen problemas al levantar el back, al hacer el merge tenia un conflicto con el archivo app.js con el origin de las opciones del cors, que yo tenia la IP y uds localhost.
+
+A corregir: 
+Forma de elegir el horario más practica
+Esta bien la validación de horarios superpuestos, pero estaría bueno que al momento de elegir el horario aparezca deshabilitado ese rango o dia (en gris).
+Notificación cuando se da de alta una reserva.
+El menú no me convence

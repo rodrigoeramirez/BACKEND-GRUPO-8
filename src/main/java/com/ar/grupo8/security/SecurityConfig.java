@@ -13,6 +13,9 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
 
 @Configuration
 @RequiredArgsConstructor
@@ -21,11 +24,24 @@ public class SecurityConfig implements WebMvcConfigurer {
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
+    public HttpFirewall relaxedHttpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedSlash(true);  // ✅ Permitir barras en URLs
+        firewall.setAllowUrlEncodedPercent(true); // ✅ Permitir % en URLs
+        firewall.setAllowSemicolon(true); // ✅ Permitir punto y coma
+        firewall.setAllowBackSlash(true); // ✅ Permitir backslash "\"
+        firewall.setAllowUrlEncodedPeriod(true); // ✅ Permitir puntos en URLs
+        firewall.setAllowUrlEncodedDoubleSlash(true); // ✅ Permitir doble slash
+        return firewall;
+    }
+
+    @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Configurar CORS
                 .csrf(config -> config.disable()) // Desactiva CSRF
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/auth/**", "/departamentos", "/cargos", "/usuarios/validate-username/**", "/usuarios/validate-email/**").permitAll(); // Rutas sin autenticación
+                    auth.requestMatchers("/auth/**", "/departamentos", "/cargos","/archivos_adjuntos/**","/archivos_adjuntos*", "/usuarios/validate-username/**", "/usuarios/validate-email/**").permitAll(); // Rutas sin autenticación
                     auth.anyRequest().authenticated(); // El resto requiere autenticación
                 })
                 .sessionManagement(session -> {
