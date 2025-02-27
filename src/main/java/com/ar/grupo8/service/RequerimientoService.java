@@ -6,11 +6,13 @@ import com.ar.grupo8.dto.RequerimientoDto;
 import com.ar.grupo8.dto.UpdateRequerimientoDto;
 import com.ar.grupo8.models.*;
 import com.ar.grupo8.repository.RequerimientoRepository;
+import com.ar.grupo8.repository.TipoRequerimientoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Year;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,6 +22,8 @@ public class RequerimientoService {
     private FileStorageService fileStorageService;
     @Autowired
     private RequerimientoRepository requerimientoRepository;
+    @Autowired
+    private TipoRequerimientoRepository tipoRequerimientoRepository;
 
     public List<RequerimientoDto> getRequerimientos() {
         // Obtener todos los requerimientos
@@ -36,6 +40,7 @@ public class RequerimientoService {
         dto.setCodigo(requerimiento.getCodigo());
         dto.setFechaHoraAlta(requerimiento.getFechaHoraAlta());
         dto.setAsunto(requerimiento.getAsunto());
+        dto.setNombreCompletoEmisor(String.format("%s %s", requerimiento.getEmisor().getNombre(), requerimiento.getEmisor().getApellido()));
         dto.setDescripcion(requerimiento.getDescripcion());
         dto.setTipoRequerimientoId(
                 requerimiento.getTipoRequerimiento() != null ? requerimiento.getTipoRequerimiento().getId() : null
@@ -321,8 +326,43 @@ public class RequerimientoService {
     }
 
     public int obtenerUltimoSecuencial(Long tipoRequerimientoId) {
-        Integer maxId = requerimientoRepository.findUltimoSecuencial(tipoRequerimientoId);
-        return maxId != null ? maxId : 0; // Si el resultado es null, retorna 0
+        // Obtener el prefijo del tipo de requerimiento
+        TipoRequerimiento tipo = tipoRequerimientoRepository.findById(tipoRequerimientoId)
+                .orElseThrow(() -> new RuntimeException("Tipo de requerimiento no encontrado"));
+        String prefijoTipo = tipo.getCodigo(); // Obtener el prefijo del tipo
+
+        // Obtener el año actual
+        int anioActual = Year.now().getValue();
+
+        // Obtener todos los códigos existentes para el tipo y año actual
+        List<Requerimiento> requerimientos = requerimientoRepository.findAllByTipoRequerimientoIdAndCodigoLike(
+                tipoRequerimientoId, prefijoTipo + "-" + anioActual + "-%");
+
+        // Encontrar el máximo secuencial
+        int maxSecuencial = 0;
+        for (Requerimiento req : requerimientos) {
+            String codigo = req.getCodigo();
+
+            // Extraer los últimos 10 dígitos del código
+            String secuencialStr = codigo.substring(codigo.lastIndexOf("-") + 1);
+
+            // Verificar que el secuencialStr tenga exactamente 10 dígitos
+            if (secuencialStr.length() == 10) {
+                try {
+                    int secuencial = Integer.parseInt(secuencialStr);
+                    if (secuencial > maxSecuencial) {
+                        maxSecuencial = secuencial;
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Error al convertir el secuencial a número: " + secuencialStr);
+                }
+            } else {
+                System.err.println("Formato de secuencial incorrecto: " + secuencialStr);
+            }
+        }
+
+        // Retornar el siguiente secuencial
+        return maxSecuencial + 1;
     }
 
 }

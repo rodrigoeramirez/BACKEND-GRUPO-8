@@ -11,9 +11,15 @@ import java.util.Optional;
 
 public interface RequerimientoRepository extends JpaRepository<Requerimiento,Long> {
     List<Requerimiento> findAllByActivoTrue();
+    // Metodo para buscar todos los requerimientos de un tipo y año específicos
+    List<Requerimiento> findAllByTipoRequerimientoIdAndCodigoLike(Long tipoRequerimientoId, String codigoLike);
     // Metodo para consultar el último código generado. Utiliza un query basado en el orden descendente del ID o del campo codigo.
-    @Query("SELECT COALESCE(MAX(r.id), 0) FROM Requerimiento r WHERE r.tipoRequerimiento.id = :tipoRequerimientoId")
+    @Query("SELECT COALESCE(MAX(CAST(RIGHT(r.codigo, 10) AS int)), 0) + 1 " +
+            "FROM Requerimiento r WHERE r.tipoRequerimiento.id = :tipoRequerimientoId " +
+            "AND r.codigo LIKE CONCAT('%-', YEAR(CURRENT_DATE), '-%')")
     Integer findUltimoSecuencial(@Param("tipoRequerimientoId") Long tipoRequerimientoId);
+
+
 
     Optional<Requerimiento> findByCodigo(String codigo);
 }
